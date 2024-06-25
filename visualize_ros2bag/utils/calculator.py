@@ -1,5 +1,4 @@
-import math
-from geometry_msgs.msg import PointStamped
+from math import dist
 
-def pointstamped_dist(p1:PointStamped, p2:PointStamped): 
-  return math.dist([p1.point.x, p1.point.y],[p2.point.x, p2.point.y])
+def point_dist(x1, y1, x2, y2):
+  return dist([x1, y1], [x2, y2])
