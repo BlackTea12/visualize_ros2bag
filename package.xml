@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>visualize_ros2bag</name>
+  <version>0.0.0</version>
+  <description>Interface</description>
+  <maintainer email="BlackTea12@github.com">Yaeohn Kim</maintainer>
+  <license>TODO</license>
+  <!-- <buildtool_depend>ament_python</buildtool_depend> -->
+  <depend>rclpy</depend>
+  <depend>rosbag2_py</depend>
+  <depend>ros2_bag_extractor</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
