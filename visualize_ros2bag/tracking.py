@@ -8,20 +8,20 @@ from functools import partial
 import time
 
 def main():
-  base_link_pose_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_21-14_59_09')
-  db_pose = []
-  if base_link_pose_db:
-    parsed_data = Bag2FileParser(base_link_pose_db)
-    data_list = ObjectType(parsed_data.get_messages('/base_link_pose'))
-    db_pose = data_list.get_data('PoseStamped')
-    # print(db_pose[0][0])
-    # print(db_pose[0][1])
-    print("base_link_pose fetched")
-  else:
-    print('wrong access!')
-    return
+  # base_link_pose_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_21-14_59_09')
+  # db_pose = []
+  # if base_link_pose_db:
+  #   parsed_data = Bag2FileParser(base_link_pose_db)
+  #   data_list = ObjectType(parsed_data.get_messages('/base_link_pose'))
+  #   db_pose = data_list.get_data('PoseStamped')
+  #   # print(db_pose[0][0])
+  #   # print(db_pose[0][1])
+  #   print("base_link_pose fetched")
+  # else:
+  #   print('wrong access!')
+  #   return
   
-  paths_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_21-09_53_33')
+  paths_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_24-15_12_06')
   db_Path = []
   if paths_db:
     parsed_data = Bag2FileParser(paths_db)
@@ -34,14 +34,25 @@ def main():
     print('wrong access!')
     return
 
+  amcl_pose_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_24-15_12_06')
+  db_amcl_pose = []
+  if amcl_pose_db:
+    parsed_data = Bag2FileParser(amcl_pose_db)
+    data_list = ObjectType(parsed_data.get_messages('/amcl_pose'))
+    db_amcl_pose = data_list.get_data('PoseWithCovarianceStamped')
+    print("amcl pose fetched")
+  else:
+    print('wrong access!')
+    return
+  
   # --- cleaned path --- #
-  merged_path = find_closest_point_path_result(db_pose, db_Path)
+  merged_path = find_closest_point_path_result(db_amcl_pose, db_Path)
   if len(merged_path)==0:
     print('no path made')
     return
   print(f'path will be visualized with length of {len(merged_path)}')
 
-  robot = [p for t, p in db_pose]
+  robot = [p for t, p in db_amcl_pose]
 
   # --- plot x-y coordinate result --- #
   # plot_xy_plane(robot, merged_path)
@@ -79,8 +90,8 @@ def video_animation(robot:list, path:list):
   ax.set_xlabel('X [m]', weight='bold')
   ax.set_ylabel('Y [m]', weight='bold')
   ax.grid(True)
-  ax.set_xlim(-1,5)
-  ax.set_ylim(-7,-2.5)
+  ax.set_xlim(4.9,8.1) #(-1,5)
+  ax.set_ylim(7.5,13.5) #(-7,-2.5)
   robot_traj, = ax.plot([], [], '*', lw=2, color='#9467bd', label='robot trajectory')
   path_traj, = ax.plot([], [], lw=3, color='#ff6969', alpha=0.7, label='follow path')
   ax.legend()
@@ -89,10 +100,11 @@ def video_animation(robot:list, path:list):
   path_x = [x for x,y in path]
   path_y = [y for x,y in path]
 
-  rb_x = rb_x[100:-1]
-  rb_y = rb_y[100:-1]
-  path_x = path_x[100:-1]
-  path_y = path_y[100:-1]
+  # post process (optional)
+  # rb_x = rb_x[100:-1]
+  # rb_y = rb_y[100:-1]
+  # path_x = path_x[100:-1]
+  # path_y = path_y[100:-1]
 
   # Create the animation
   ani = animation.FuncAnimation(
@@ -104,7 +116,8 @@ def video_animation(robot:list, path:list):
   # Save the animation as an mp4 file
   # ani.save('/home/hd/main_ws/camera_slam_xyplane.mp4', writer='ffmpeg', fps=1/0.05)
   ani.save('/home/hd/main_ws/lidar_slam_xyplane.mp4', writer='ffmpeg', fps=1/0.05)
-  
+
   print("file saved!")
+
 if __name__ == '__main__':
   main()
