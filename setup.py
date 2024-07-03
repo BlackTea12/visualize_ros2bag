@@ -23,6 +23,7 @@ setup(
             'tracking = visualize_ros2bag.tracking:main',
             'path_error = visualize_ros2bag.path_error:main',
             'heading_consist = visualize_ros2bag.heading_consistency:main',
+            'multi_scene = visualize_ros2bag.multiple_path_test:main',
         ],
     },
 )
