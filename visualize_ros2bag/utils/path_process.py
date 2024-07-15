@@ -1,6 +1,5 @@
 from math import dist
 from nav_msgs.msg import Path
-
 def find_robot_closest_index_in_path(x, y, path:Path)-> int: 
   '''
   @x: robot point x
@@ -44,3 +43,55 @@ def find_closest_point_path_result(robot:list, paths:list)-> list:
     result_path.append((current_path.poses[closest_idx].pose.position.x, current_path.poses[closest_idx].pose.position.y))
   
   return result_path
+
+def find_traveled_robot_trajectory_in_time(robot:list, start_timestamp, limit_timestamp)-> list:
+  '''
+  @brief this function will select robot trajectory that actually traveled\
+   based on timestamp
+  @robot: [[timstamp0, (x, y, deg)], ...]
+  @start_timestamp: published time of path
+  @limit_timestamp: exceeding this value will break search in robot
+  @return list of (x,y) robot trajectory
+  '''
+  result_path=[]
+  
+  for timestamp, pose in robot:
+    if timestamp < start_timestamp:
+      continue
+    if timestamp > limit_timestamp:
+      break
+    result_path.append((pose[0], pose[1]))
+  return result_path
+
+def find_traveled_robot_trajectory_in_single_path(robot:list, path:Path, start_timestamp)-> list:
+  '''
+  @brief this function will select robot trajectory that actually traveled\
+   based on given path
+  @robot: [[timstamp0, (x, y, deg)], ...]
+  @paths: nav_msgs.msg.Path
+  @start_timestamp: published time of path
+  @limit_timestamp: exceeding this value will break search in robot
+  @return list of (x,y) robot trajectory
+  '''
+  result_path=[]
+  idx = 0 
+  for timestamp, pose in robot:
+    if timestamp < start_timestamp:
+      continue
+    if idx > len(path.poses)*1.5:
+      break
+    idx += 1
+    result_path.append((pose[0], pose[1]))
+  return result_path
+
+def filter_only_length_diff_path(paths:list)-> list:
+  '''
+  @paths: [[timstamp0, Path0], ...]
+  '''
+  result = []
+  result.append(paths[0])
+  for path in paths:
+    if len(result[-1][1].poses) != len(path[1].poses):
+      result.append(path)
+    
+  return result
