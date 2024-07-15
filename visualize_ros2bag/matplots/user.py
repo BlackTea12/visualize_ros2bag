@@ -11,10 +11,6 @@ class UserSingleMatplot:
     self.paths = [p for t,p in path]
     self.idx = -1
     self._saved_idxes = []
-
-    # single plot
-    self.fig, self.ax = plt.subplots()
-    plt.subplots_adjust(bottom=0.2)
     return
 
   def _on_next_bt(self, event):
@@ -44,6 +40,10 @@ class UserSingleMatplot:
       plt.close()
 
   def check_paths(self):
+    # single plot
+    self.fig, self.ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.2)
+
     # button setting
     button_ax = plt.axes([0.7, 0.05, 0.1, 0.075])
     button_next = Button(button_ax, 'Next')

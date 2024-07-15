@@ -73,7 +73,7 @@ def find_traveled_robot_trajectory_in_single_path(robot:list, path:Path, start_t
   @limit_timestamp: exceeding this value will break search in robot
   @return list of (x,y) robot trajectory
   '''
-  result_path=[]
+  result_path, ts = [], []
   idx = 0 
   for timestamp, pose in robot:
     if timestamp < start_timestamp:
@@ -82,7 +82,9 @@ def find_traveled_robot_trajectory_in_single_path(robot:list, path:Path, start_t
       break
     idx += 1
     result_path.append((pose[0], pose[1]))
-  return result_path
+    ts.append(timestamp)
+    
+  return result_path, ts
 
 def filter_only_length_diff_path(paths:list)-> list:
   '''
