@@ -2,6 +2,7 @@ from ros2_bag_extractor.util import directory as dir
 from ros2_bag_extractor.bag_parser.parser import Bag2FileParser
 from ros2_bag_extractor.bag_parser.object import ObjectType
 from visualize_ros2bag.utils.path_process import find_closest_point_path_result
+from visualize_ros2bag.utils.path_process import filter_only_length_diff_path
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from functools import partial
@@ -21,20 +22,20 @@ def main():
   #   print('wrong access!')
   #   return
   
-  paths_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_24-15_12_06')
+  paths_db = dir.get_rosbag_file('develop_ws/ros2bag/track/rpp', 'rosbag2_2024_11_04-16_05_31')
   db_Path = []
   if paths_db:
     parsed_data = Bag2FileParser(paths_db)
-    data_list = ObjectType(parsed_data.get_messages('/plan'))
+    data_list = ObjectType(parsed_data.get_messages('/graph_path'))
     db_Path = data_list.get_data('Path')  # collects path that is different during recording
-    # print(db_Path[0][0])
-    # print(db_Path[0][1])
+    # print(db_Path[0][0])  # time
+    # print(db_Path[0][1])  # path
     print(f"plan fetched, total path count is {len(db_Path)}")
   else:
     print('wrong access!')
     return
 
-  amcl_pose_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_06_24-15_12_06')
+  amcl_pose_db = dir.get_rosbag_file('develop_ws/ros2bag/track/rpp', 'rosbag2_2024_11_04-16_05_31')
   db_amcl_pose = []
   if amcl_pose_db:
     parsed_data = Bag2FileParser(amcl_pose_db)
@@ -46,7 +47,12 @@ def main():
     return
   
   # --- cleaned path --- #
-  merged_path = find_closest_point_path_result(db_amcl_pose, db_Path)
+  # merged_path = find_closest_point_path_result(db_amcl_pose, db_Path)
+  
+  merged_path = []  # for single path
+  for p in db_Path[0][1].poses:
+    merged_path.append((p.pose.position.x, p.pose.position.y))
+
   if len(merged_path)==0:
     print('no path made')
     return
@@ -55,21 +61,23 @@ def main():
   robot = [p for t, p in db_amcl_pose]
 
   # --- plot x-y coordinate result --- #
-  # plot_xy_plane(robot, merged_path)
+  plot_xy_plane(robot, merged_path)
 
   # --- video animation ---#
-  video_animation(robot, merged_path)
+  # video_animation(robot, merged_path)
 
 def plot_xy_plane(robot:list, path:list):
   rb_x = [x for x,y,deg in robot]
   rb_y = [y for x,y,deg in robot]
   path_x = [x for x,y in path]
   path_y = [y for x,y in path]
-  plt.title("Trajectory Result", weight='bold', fontsize=12)
+  plt.title("RPP: Trajectory B Result", weight='bold', fontsize=12)
   plt.plot(rb_x, rb_y, '*', color='#9467bd', label='robot trajectory')
   plt.plot(path_x, path_y, color='#ff6969', label='follow path')
   plt.xlabel('X [m]', weight='bold')
   plt.ylabel('Y [m]', weight='bold')
+  # plt.xlim([3,8])
+  # plt.ylim([10,18])
   plt.grid(True)
   plt.legend(loc='best')
   plt.show()
@@ -90,8 +98,8 @@ def video_animation(robot:list, path:list):
   ax.set_xlabel('X [m]', weight='bold')
   ax.set_ylabel('Y [m]', weight='bold')
   ax.grid(True)
-  ax.set_xlim(4.9,8.1) #(-1,5)
-  ax.set_ylim(7.5,13.5) #(-7,-2.5)
+  ax.set_xlim(3, 8) #(-1,5)
+  ax.set_ylim(10,18) #(-7,-2.5)
   robot_traj, = ax.plot([], [], '*', lw=2, color='#9467bd', label='robot trajectory')
   path_traj, = ax.plot([], [], lw=3, color='#ff6969', alpha=0.7, label='follow path')
   ax.legend()
@@ -101,10 +109,10 @@ def video_animation(robot:list, path:list):
   path_y = [y for x,y in path]
 
   # post process (optional)
-  # rb_x = rb_x[100:-1]
-  # rb_y = rb_y[100:-1]
-  # path_x = path_x[100:-1]
-  # path_y = path_y[100:-1]
+  rb_x = rb_x[:1000]
+  rb_y = rb_y[:1000]
+  path_x = path_x[:1000]
+  path_y = path_y[:1000]
 
   # Create the animation
   ani = animation.FuncAnimation(
@@ -115,7 +123,7 @@ def video_animation(robot:list, path:list):
 
   # Save the animation as an mp4 file
   # ani.save('/home/hd/main_ws/camera_slam_xyplane.mp4', writer='ffmpeg', fps=1/0.05)
-  ani.save('/home/hd/main_ws/lidar_slam_xyplane.mp4', writer='ffmpeg', fps=1/0.05)
+  ani.save('/home/hd/mid_scenario_video.mp4', writer='ffmpeg', fps=1/0.05)
 
   print("file saved!")
 
