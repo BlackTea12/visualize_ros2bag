@@ -11,4 +11,6 @@
 
     # package 'ros2_bag_extractor'
     git clone https://github.com/BlackTea12/ros2_bag_extractor.git
+    # commit d6cbdfe887650a38c21410a666f9cbdba84b0709
 
+## How to use
