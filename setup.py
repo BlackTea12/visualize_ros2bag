@@ -25,6 +25,7 @@ setup(
             'heading_consist = visualize_ros2bag.heading_consistency:main',
             'multi_scene = visualize_ros2bag.multiple_path_test:main',
             'traj_scenes = visualize_ros2bag.trajectory_scenes:main',
+            'command_comparison = visualize_ros2bag.command_comparison:main'
         ],
     },
 )

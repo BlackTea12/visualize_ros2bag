@@ -5,7 +5,7 @@
   <version>0.0.0</version>
   <description>Interface</description>
   <maintainer email="BlackTea12@github.com">Yaeohn Kim</maintainer>
-  <license>TODO</license>
+  <license>BSD 2</license>
   <!-- <buildtool_depend>ament_python</buildtool_depend> -->
   <depend>rclpy</depend>
   <depend>rosbag2_py</depend>
