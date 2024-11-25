@@ -7,9 +7,13 @@
 
 </div>
 
+In this package, ros2 recorded bags can be plotted using matplot library. <br />
+Write your own script and run with ros2. <br />
+Data extraction is done with the following dependency package.
+
 ## Dependency
 ### 1. ros2_bag_extractor
-```
+``` shell
 git clone https://github.com/BlackTea12/ros2_bag_extractor.git
 # commit d6cbdfe887650a38c21410a666f9cbdba84b0709 (old version)
 # most recent commit (new version)
@@ -17,7 +21,7 @@ git clone https://github.com/BlackTea12/ros2_bag_extractor.git
 
 ## How to use
 For the new version, command_comparison.py is available.
-```
+``` shell
 ros2 run visualize_ros2bag command_comparison
 ```
 
