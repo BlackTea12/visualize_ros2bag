@@ -53,8 +53,8 @@ class UserSingleMatplot:
     button_save.on_clicked(self._on_save_bt)
     self.ax.set_xlabel('X[m]')
     self.ax.set_ylabel('Y[m]')
-    self.ax.set_xlim((3,8))
-    self.ax.set_ylim((11,15))
+    # self.ax.set_xlim((3,8))
+    # self.ax.set_ylim((11,15))
     plt.show()
 
   def get_selected_idx(self):

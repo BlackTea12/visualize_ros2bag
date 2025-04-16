@@ -11,7 +11,7 @@ from functools import partial
 import time
 
 def main():
-  paths_db = dir.get_rosbag_file('rosbag/scenes', 'rosbag2_2024_07_11-15_17_54')
+  paths_db = dir.get_rosbag_file('field_rosbag', 'rosbag2_2024_07_22-10_00_17')
   db_Path = []
   if paths_db:
     parsed_data = Bag2FileParser(paths_db)
@@ -24,13 +24,13 @@ def main():
     print('wrong access!')
     return
 
-  amcl_pose_db = dir.get_rosbag_file('rosbag/scenes', 'rosbag2_2024_07_11-15_17_54')
+  amcl_pose_db = dir.get_rosbag_file('field_rosbag', 'rosbag2_2024_07_22-10_00_17')
   db_amcl_pose = []
   if amcl_pose_db:
     parsed_data = Bag2FileParser(amcl_pose_db)
     data_list = ObjectType(parsed_data.get_messages('/amcl_pose'))
     db_amcl_pose = data_list.get_data('PoseWithCovarianceStamped')
-    print("amcl pose fetched")
+    print(f"amcl pose fetched {len(db_amcl_pose)}")
   else:
     print('wrong access!')
     return
@@ -41,7 +41,7 @@ def main():
   
   # --- plot x-y coordinate result --- #
   # plot_xy_plane(db_amcl_pose, db_Path, single_path_checker.get_selected_idx())
-  plot_xy_plane_with_path_error(db_amcl_pose, db_Path, [0,2])
+  plot_xy_plane_with_path_error(db_amcl_pose, db_Path, [4,5])
 
 def plot_xy_plane(robot_db:list, path_db:list, idxes:list):
   fig, axis = plt.subplots(1,len(idxes))
@@ -58,8 +58,8 @@ def plot_xy_plane(robot_db:list, path_db:list, idxes:list):
     path_y = [p.pose.position.y for p in path_db[idxes[i]][1].poses]
 
     path_number = str(idxes[i])+"th follow path"
-    axis[i].set_xlim((3,10))
-    axis[i].set_ylim((10,15))
+    # axis[i].set_xlim((3,10))
+    # axis[i].set_ylim((10,15))
     axis[i].plot(robot_x, robot_y, '*', color='#9467bd', label='robot trajectory')
     axis[i].plot(path_x, path_y, color='#ff6969', label=path_number)
     axis[i].set_title(f't+{i+1}', weight='bold')
@@ -89,8 +89,8 @@ def plot_xy_plane_with_path_error(robot_db:list, path_db:list, idxes:list):
 
     path_number = str(idxes[i])+"th follow path"
     axis = fig.add_subplot(gs[0,i])
-    axis.set_xlim((3,10))
-    axis.set_ylim((10,15))
+    axis.set_xlim((-0.5, 1.1))
+    axis.set_ylim((-0.5,3.0))
     axis.plot(robot_x, robot_y, '*', color='#9467bd', label='robot trajectory')
     axis.plot(path_x, path_y, color='#ff6969', label=path_number)
     axis.set_title(f't+{i+1}', weight='bold')

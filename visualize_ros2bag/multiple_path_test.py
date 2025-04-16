@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def main():  
-  paths_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_07_03-14_10_09')
+  paths_db = dir.get_rosbag_file('field_rosbag', 'rosbag2_2024_07_22-10_00_17')
   db_Path = []
   if paths_db:
     parsed_data = Bag2FileParser(paths_db)
@@ -20,7 +20,7 @@ def main():
     print('wrong access!')
     return
 
-  amcl_pose_db = dir.get_rosbag_file('rosbag', 'rosbag2_2024_07_03-14_10_09')
+  amcl_pose_db = dir.get_rosbag_file('field_rosbag', 'rosbag2_2024_07_22-10_00_17')
   db_amcl_pose = []
   if amcl_pose_db:
     parsed_data = Bag2FileParser(amcl_pose_db)
@@ -70,7 +70,7 @@ def calculate_lateral_error(robot:list, path:list):
   for t, tup in robot:
     idx = find_robot_closest_index_in_path(tup[0], tup[1], path[1])
     val = point_dist(tup[0], tup[1], path[1].poses[idx].pose.position.x, path[1].poses[idx].pose.position.y)
-    # if val > 0.7:
+    # if val > 0.17:
     #   continue
     t_arr.append(t)
     err.append(val)
@@ -98,11 +98,11 @@ def plot_lateral_error(time_arr:list, err_arr:list):
   plt.grid(True)
   # plt.legend(loc='best')
   
-  plt.text(120, 0.17, f'avg: {mean_X}\ncov: {variance_X}', fontsize=11, bbox=dict(boxstyle='square', color='white'))
+  plt.text(120, mean_X+0.1, f'avg: {mean_X}\ncov: {variance_X}', fontsize=11, bbox=dict(boxstyle='square', color='white'))
   # plt.text(1,0.25, 'avg: 0.079\ncov: 0.0092', fontsize=11, bbox=dict(boxstyle='square', color='white'))
   
   # annotation1
-  a1 = plt.annotate('', xy=(50, mean_X-0.01), xytext=(120,0.17),
+  a1 = plt.annotate('', xy=(50, mean_X-0.01), xytext=(125, mean_X+0.1),
     fontsize=10, ha='center',
     arrowprops=dict(facecolor='#9467bd', width=0.5, shrink=0.1, headwidth=10))
   a1.draggable()

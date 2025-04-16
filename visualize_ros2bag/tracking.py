@@ -22,11 +22,11 @@ def main():
   #   print('wrong access!')
   #   return
   
-  paths_db = dir.get_rosbag_file('develop_ws/ros2bag/track/rpp', 'rosbag2_2024_11_04-16_05_31')
+  paths_db = dir.get_rosbag_file('develop_ws/ros2bag/plan/rpp', 'rosbag2_2024_11_04-15_53_46')
   db_Path = []
   if paths_db:
     parsed_data = Bag2FileParser(paths_db)
-    data_list = ObjectType(parsed_data.get_messages('/graph_path'))
+    data_list = ObjectType(parsed_data.get_messages('/plan'))
     db_Path = data_list.get_data('Path')  # collects path that is different during recording
     # print(db_Path[0][0])  # time
     # print(db_Path[0][1])  # path
@@ -35,7 +35,7 @@ def main():
     print('wrong access!')
     return
 
-  amcl_pose_db = dir.get_rosbag_file('develop_ws/ros2bag/track/rpp', 'rosbag2_2024_11_04-16_05_31')
+  amcl_pose_db = dir.get_rosbag_file('develop_ws/ros2bag/plan/rpp', 'rosbag2_2024_11_04-15_53_46')
   db_amcl_pose = []
   if amcl_pose_db:
     parsed_data = Bag2FileParser(amcl_pose_db)
@@ -61,17 +61,17 @@ def main():
   robot = [p for t, p in db_amcl_pose]
 
   # --- plot x-y coordinate result --- #
-  plot_xy_plane(robot, merged_path)
+  # plot_xy_plane(robot, merged_path)
 
   # --- video animation ---#
-  # video_animation(robot, merged_path)
+  video_animation(robot, merged_path)
 
 def plot_xy_plane(robot:list, path:list):
   rb_x = [x for x,y,deg in robot]
   rb_y = [y for x,y,deg in robot]
   path_x = [x for x,y in path]
   path_y = [y for x,y in path]
-  plt.title("RPP: Trajectory B Result", weight='bold', fontsize=12)
+  plt.title("NMPC: Hybrid A* Trajectory Result", weight='bold', fontsize=12)
   plt.plot(rb_x, rb_y, '*', color='#9467bd', label='robot trajectory')
   plt.plot(path_x, path_y, color='#ff6969', label='follow path')
   plt.xlabel('X [m]', weight='bold')
@@ -94,12 +94,12 @@ def video_plot(frame, x1, y1, line1, x2, y2, line2):
 
 def video_animation(robot:list, path:list):
   fig, ax = plt.subplots(figsize=(6, 5))
-  ax.set_title("Trajectory Result", weight='bold', fontsize=12)
+  ax.set_title("RPP: Hybrid A* Trajectory Result", weight='bold', fontsize=12)
   ax.set_xlabel('X [m]', weight='bold')
   ax.set_ylabel('Y [m]', weight='bold')
   ax.grid(True)
-  ax.set_xlim(3, 8) #(-1,5)
-  ax.set_ylim(10,18) #(-7,-2.5)
+  ax.set_xlim(-1, 6) #(-1,5)
+  ax.set_ylim(-2,5) #(-7,-2.5)
   robot_traj, = ax.plot([], [], '*', lw=2, color='#9467bd', label='robot trajectory')
   path_traj, = ax.plot([], [], lw=3, color='#ff6969', alpha=0.7, label='follow path')
   ax.legend()
@@ -109,10 +109,10 @@ def video_animation(robot:list, path:list):
   path_y = [y for x,y in path]
 
   # post process (optional)
-  rb_x = rb_x[:1000]
-  rb_y = rb_y[:1000]
-  path_x = path_x[:1000]
-  path_y = path_y[:1000]
+  # rb_x = rb_x[:1000]
+  # rb_y = rb_y[:1000]
+  # path_x = path_x[:1000]
+  # path_y = path_y[:1000]
 
   # Create the animation
   ani = animation.FuncAnimation(
@@ -123,7 +123,7 @@ def video_animation(robot:list, path:list):
 
   # Save the animation as an mp4 file
   # ani.save('/home/hd/main_ws/camera_slam_xyplane.mp4', writer='ffmpeg', fps=1/0.05)
-  ani.save('/home/hd/mid_scenario_video.mp4', writer='ffmpeg', fps=1/0.05)
+  ani.save('/home/hd/hybrid_astar_rpp_video.mp4', writer='ffmpeg', fps=80)
 
   print("file saved!")
 
